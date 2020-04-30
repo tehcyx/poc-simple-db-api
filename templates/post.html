@@ -1,0 +1,96 @@
+{{ define "post" }}
+
+    {{ template "header" . }}
+
+    <main role="main">
+        <section class="jumbotron text-center mb-0">
+            <div class="container">
+                <h1 class="jumbotron-heading">
+                    Post 1
+                </h1>
+            </div>
+        </section>
+
+        <div class="py-5 bg-light">
+
+            <div class="container">
+
+                {{ template "pagination-post" . }}
+                <br />
+
+
+                <div class="row">
+                    <div class="card mb-3" style="flex-grow: 3">
+                        <div class="row no-gutters">
+                            <div class="col-md-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">@tehcyx</h5>
+                                    <p class="card-text">A cool dude</p>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="card-body">
+                                    <h5 class="card-title">Special title treatment</h5>
+                                    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                                    <p class="card-text"><small class="text-muted">Last updated 15 mins ago</small></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <br />
+
+                <div class="row">
+                    <div class="card mb-3" style="flex-grow: 3">
+                        <div class="row no-gutters">
+                            <div class="col-md-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">@don</h5>
+                                    <p class="card-text">yes!</p>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="card-body">
+                                    <h5 class="card-title">Special title treatment</h5>
+                                    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                                    <p class="card-text"><small class="text-muted">Last updated 7 mins ago</small></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <br />
+
+                <div class="row">
+                    <div class="card mb-3" style="flex-grow: 3">
+                        <div class="row no-gutters">
+                            <div class="col-md-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">@wonton</h5>
+                                    <p class="card-text">soup!</p>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="card-body">
+                                    <h5 class="card-title">Special title treatment</h5>
+                                    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                                    <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+      
+                <br />
+                {{ template "pagination-post" . }}
+
+            </div>
+
+        </div>
+    </main>
+
+    {{ template "footer" . }}
+
+{{ end }}

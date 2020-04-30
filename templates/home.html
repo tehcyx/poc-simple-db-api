@@ -1,0 +1,42 @@
+{{ define "home" }}
+
+    {{ template "header" . }}
+
+    <main role="main">
+        <section class="jumbotron text-center mb-0">
+            <div class="container">
+                <h1 class="jumbotron-heading">
+                    Event List
+                </h1>
+            </div>
+        </section>
+
+        <div class="py-5 bg-light">
+            <div class="container">
+                <div class="row">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Data</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{range $i, $e := .APIData}}
+                            <tr>
+                                <th scope="row">{{$i}}</th>
+                                <td>{{.Date}}</td>
+                                <td>{{(toString .Data)}}</td>
+                            </tr>
+                            {{end}}
+                        </tbody>
+                    </table>    
+                </div>
+            </div>
+        </div>
+    </main>
+
+    {{ template "footer" . }}
+
+{{ end }}

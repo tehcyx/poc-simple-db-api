@@ -1,0 +1,11 @@
+{{ define "footer" }}
+    <footer class="py-5 px-5">
+        <div class="container">
+            <small class="text-muted">
+                {{ if $.request_id }}request-id: {{ $.request_id }}</br>{{end}}
+            </small>
+        </div>
+    </footer>
+</body>
+</html>
+{{ end }}
