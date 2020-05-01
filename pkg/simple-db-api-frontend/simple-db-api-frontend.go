@@ -48,7 +48,7 @@ func (svc *SimpleDBAPIFrontend) IndexHandler(w http.ResponseWriter, r *http.Requ
 	log.Info("index handler")
 
 	client := http.Client{Timeout: 30 * time.Second}
-	req, err := http.NewRequestWithContext(r.Context(), http.MethodGet, fmt.Sprintf("http://%s/read", svc.BackendURL), nil)
+	req, err := http.NewRequestWithContext(r.Context(), http.MethodGet, fmt.Sprintf("%s/read", svc.BackendURL), nil)
 	if err != nil {
 		log.Debug("API request failed")
 		w.WriteHeader(http.StatusInternalServerError)

@@ -5,13 +5,19 @@ GIT_COMMIT=$(shell git rev-list -1 HEAD)
 CMP_NAME=simple-db-api
 FRONTEND_NAME=simple-db-api-frontend
 
-build: bin/templates test cover
+build: bin/templates test cover backend frontend
+
+backend: bin/templates test cover
 	go build -ldflags "-X github.com/tehcyx/${CMP_NAME}/pkg/${CMP_NAME}/cmd.Version=${VERSION} -X github.com/tehcyx/${CMP_NAME}/pkg/${CMP_NAME}/cmd.GitCommit=${GIT_COMMIT}" -i -o bin/app ./cmd/${CMP_NAME}
+
+frontend: bin/templates test cover
 	go build -ldflags "-X github.com/tehcyx/${CMP_NAME}/pkg/${CMP_NAME}/cmd.Version=${VERSION} -X github.com/tehcyx/${CMP_NAME}/pkg/${CMP_NAME}/cmd.GitCommit=${GIT_COMMIT}" -i -o bin/frontend ./cmd/${FRONTEND_NAME}
 
-docker: bin/templates test cover 
-	docker build -t $(CMP_NAME):$(VERSION) -f build/package/Dockerfile --build-arg CMP_NAME="${CMP_NAME}" --build-arg VERSION="${VERSION}" --build-arg GIT_COMMIT="${GIT_COMMIT}" ../../
-	docker build -t $(CMP_NAME):$(GIT_COMMIT) -f build/package/Dockerfile --build-arg CMP_NAME="${CMP_NAME}" --build-arg VERSION="${VERSION}" --build-arg GIT_COMMIT="${GIT_COMMIT}" ../../
+docker:
+	docker build -t $(CMP_NAME):$(VERSION) -f build/package/Dockerfile.backend --build-arg CMP_NAME="${CMP_NAME}" --build-arg VERSION="${VERSION}" --build-arg GIT_COMMIT="${GIT_COMMIT}" .
+	docker tag $(CMP_NAME):$(VERSION) $(CMP_NAME):$(GIT_COMMIT)
+	docker build -t $(FRONTEND_NAME):$(VERSION) -f build/package/Dockerfile.frontend --build-arg CMP_NAME="${FRONTEND_NAME}" --build-arg VERSION="${VERSION}" --build-arg GIT_COMMIT="${GIT_COMMIT}" .
+	docker tag $(FRONTEND_NAME):$(VERSION) $(FRONTEND_NAME):$(GIT_COMMIT)
 
 install: build
 	go install

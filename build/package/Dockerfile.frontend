@@ -1,0 +1,18 @@
+FROM golang:1.14.2-alpine3.11 as builder
+
+RUN apk add --update --no-cache make gcc libc-dev git
+
+WORKDIR /workspace
+
+COPY . /workspace/
+
+RUN make frontend
+
+FROM alpine:3.11
+
+ARG CMP_NAME
+ARG VERSION
+ARG GIT_COMMIT
+
+COPY --from=builder /workspace/bin/frontend /usr/local/bin/app
+ENTRYPOINT ["/usr/local/bin/app"]

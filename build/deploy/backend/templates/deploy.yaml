@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+   labels:
+      app: simple-db-api
+   name: simple-db-api
+   namespace: {{ .Release.Namespace }}
+spec:
+   replicas: 1
+   selector:
+      matchLabels:
+         app: simple-db-api
+   template:
+      metadata:
+         labels:    
+            app: simple-db-api
+         annotations:
+            sidecar.istio.io/inject: "true"
+            traffic.sidecar.istio.io/includeInboundPorts: "8080"
+      spec:
+         serviceAccountName: simple-db-api-sa
+         containers:
+           - name: simple-db-api
+             image: eu.gcr.io/sap-ce-central-arch/commerce/simple-db-api:0.1.0
+             resources:
+                limits:
+                   memory: 512Mi
+             imagePullPolicy: Always              
+             ports:
+              - containerPort: 8080
+                name: http
