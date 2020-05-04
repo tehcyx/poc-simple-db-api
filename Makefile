@@ -19,6 +19,18 @@ docker:
 	docker build -t $(FRONTEND_NAME):$(VERSION) -f build/package/Dockerfile.frontend --build-arg CMP_NAME="${FRONTEND_NAME}" --build-arg VERSION="${VERSION}" --build-arg GIT_COMMIT="${GIT_COMMIT}" .
 	docker tag $(FRONTEND_NAME):$(VERSION) $(FRONTEND_NAME):$(GIT_COMMIT)
 
+tag:
+	docker tag $(CMP_NAME):$(VERSION) tehcyx/$(CMP_NAME):$(VERSION)
+	docker tag $(CMP_NAME):$(VERSION) tehcyx/$(CMP_NAME):$(GIT_COMMIT)
+	docker tag $(FRONTEND_NAME):$(VERSION) tehcyx/$(FRONTEND_NAME):$(VERSION)
+	docker tag $(FRONTEND_NAME):$(VERSION) tehcyx/$(FRONTEND_NAME):$(GIT_COMMIT)
+
+push:
+	docker push tehcyx/$(CMP_NAME):$(VERSION)
+	docker push tehcyx/$(CMP_NAME):$(GIT_COMMIT)
+	docker push tehcyx/$(FRONTEND_NAME):$(VERSION)
+	docker push tehcyx/$(FRONTEND_NAME):$(GIT_COMMIT)
+
 install: build
 	go install
 

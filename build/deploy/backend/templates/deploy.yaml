@@ -21,7 +21,7 @@ spec:
          serviceAccountName: simple-db-api-sa
          containers:
            - name: simple-db-api
-             image: eu.gcr.io/sap-ce-central-arch/commerce/simple-db-api:0.1.0
+             image: tehcyx/simple-db-api:0.1.0
              resources:
                 limits:
                    memory: 512Mi
