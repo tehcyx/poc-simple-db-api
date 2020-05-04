@@ -3,6 +3,7 @@ package event
 import "time"
 
 type Kyma struct {
-	Date time.Time
-	Data string `json:"orderCode"`
+	Date       time.Time
+	BaseSiteID string `json:"baseSiteId"`
+	OrderCode  string `json:"orderCode"`
 }

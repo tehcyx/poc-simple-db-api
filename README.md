@@ -1,6 +1,5 @@
 # Simple DB API
 
-
 ## About
 
 To start run `make`. This will give you two binaries in the `/bin` folder. One called `app` is the backend, that  exposes:
@@ -8,6 +7,7 @@ To start run `make`. This will give you two binaries in the `/bin` folder. One c
 - `/create` an endpoint to POST via JSON an order created event in the form of 
     ```
     {
+        "baseSiteId": "an-id",
         "orderCode": "4caad296-e0c5-491e-98ac-0ed118f9474e"
     }
     ```
