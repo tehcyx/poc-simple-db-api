@@ -14,6 +14,7 @@ import (
 	service "github.com/tehcyx/simple-db-api/pkg/simple-db-api"
 	"github.com/tehcyx/simple-db-api/pkg/simple-db-api/cmd"
 	"github.com/tehcyx/simple-db-api/pkg/store"
+	"github.com/tehcyx/simple-db-api/pkg/util"
 )
 
 const (
@@ -50,6 +51,14 @@ func main() {
 		srvPort = os.Getenv("PORT")
 	}
 	addr := os.Getenv("LISTEN_ADDR")
+
+	var DBUser, DBPass, DBDBase, DBHost, DBPort string
+	util.MustMapEnv(&DBUser, "POSTGRES_USER")
+	util.MustMapEnv(&DBPass, "POSTGRES_PASSWORD")
+	util.MustMapEnv(&DBDBase, "POSTGRES_DB")
+	util.MustMapEnv(&DBHost, "POSTGRES_HOST")
+	util.MustMapEnv(&DBPort, "POSTGRES_PORT")
+
 	svc := service.NewSimpleDBAPI().WithStorage(store.NewInMemoryStore())
 	// util.MustMapEnv(&svc.KymaURL, "KYMA_URL")
 	// util.MustMapEnv(&svc.CommerceURL, "COMMERCE_URL")

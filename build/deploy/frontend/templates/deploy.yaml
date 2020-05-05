@@ -16,7 +16,7 @@ spec:
             app: simple-db-api-frontend
          annotations:
             sidecar.istio.io/inject: "true"
-            traffic.sidecar.istio.io/includeInboundPorts: "8080"
+            traffic.sidecar.istio.io/includeInboundPorts: "8081"
       spec:
          serviceAccountName: simple-db-api-frontend-sa
          containers:

@@ -4,6 +4,7 @@ VERSION=$(shell cat VERSION)
 GIT_COMMIT=$(shell git rev-list -1 HEAD)
 CMP_NAME=simple-db-api
 FRONTEND_NAME=simple-db-api-frontend
+DATABASE=postgres
 
 build: bin/templates test cover backend frontend
 
@@ -13,23 +14,47 @@ backend: bin/templates test cover
 frontend: bin/templates test cover
 	go build -ldflags "-X github.com/tehcyx/${CMP_NAME}/pkg/${CMP_NAME}/cmd.Version=${VERSION} -X github.com/tehcyx/${CMP_NAME}/pkg/${CMP_NAME}/cmd.GitCommit=${GIT_COMMIT}" -i -o bin/frontend ./cmd/${FRONTEND_NAME}
 
-docker:
-	docker build -t $(CMP_NAME):$(VERSION) -f build/package/Dockerfile.backend --build-arg CMP_NAME="${CMP_NAME}" --build-arg VERSION="${VERSION}" --build-arg GIT_COMMIT="${GIT_COMMIT}" .
-	docker tag $(CMP_NAME):$(VERSION) $(CMP_NAME):$(GIT_COMMIT)
-	docker build -t $(FRONTEND_NAME):$(VERSION) -f build/package/Dockerfile.frontend --build-arg CMP_NAME="${FRONTEND_NAME}" --build-arg VERSION="${VERSION}" --build-arg GIT_COMMIT="${GIT_COMMIT}" .
-	docker tag $(FRONTEND_NAME):$(VERSION) $(FRONTEND_NAME):$(GIT_COMMIT)
+docker: dockerbackend dockerfrontend dockerdb
 
-tag:
-	docker tag $(CMP_NAME):$(VERSION) tehcyx/$(CMP_NAME):$(VERSION)
-	docker tag $(CMP_NAME):$(VERSION) tehcyx/$(CMP_NAME):$(GIT_COMMIT)
-	docker tag $(FRONTEND_NAME):$(VERSION) tehcyx/$(FRONTEND_NAME):$(VERSION)
-	docker tag $(FRONTEND_NAME):$(VERSION) tehcyx/$(FRONTEND_NAME):$(GIT_COMMIT)
+dockerbackend:
+	docker build -t ${CMP_NAME}:${VERSION} -f build/package/Dockerfile.backend --build-arg CMP_NAME="${CMP_NAME}" --build-arg VERSION="${VERSION}" --build-arg GIT_COMMIT="${GIT_COMMIT}" .
+	docker tag ${CMP_NAME}:${VERSION} ${CMP_NAME}:${GIT_COMMIT}
 
-push:
-	docker push tehcyx/$(CMP_NAME):$(VERSION)
-	docker push tehcyx/$(CMP_NAME):$(GIT_COMMIT)
-	docker push tehcyx/$(FRONTEND_NAME):$(VERSION)
-	docker push tehcyx/$(FRONTEND_NAME):$(GIT_COMMIT)
+dockerfrontend:
+	docker build -t ${FRONTEND_NAME}:${VERSION} -f build/package/Dockerfile.frontend --build-arg CMP_NAME="${FRONTEND_NAME}" --build-arg VERSION="${VERSION}" --build-arg GIT_COMMIT="${GIT_COMMIT}" .
+	docker tag ${FRONTEND_NAME}:${VERSION} ${FRONTEND_NAME}:${GIT_COMMIT}
+
+dockerdb:
+	docker build -t ${DATABASE}:${VERSION} -f build/package/Dockerfile.${DATABASE} --build-arg CMP_NAME="${DATABASE}" --build-arg VERSION="${VERSION}" --build-arg GIT_COMMIT="${GIT_COMMIT}" ./${DATABASE}
+	docker tag ${DATABASE}:${VERSION} ${DATABASE}:${GIT_COMMIT}
+
+tag: tagbackend tagfrontend tagdb
+
+tagbackend: dockerbackend
+	docker tag ${CMP_NAME}:${VERSION} tehcyx/${CMP_NAME}:${VERSION}
+	docker tag ${CMP_NAME}:${VERSION} tehcyx/${CMP_NAME}:${GIT_COMMIT}
+
+tagfrontend: dockerfrontend
+	docker tag ${FRONTEND_NAME}:${VERSION} tehcyx/${FRONTEND_NAME}:${VERSION}
+	docker tag ${FRONTEND_NAME}:${VERSION} tehcyx/${FRONTEND_NAME}:${GIT_COMMIT}
+
+tagdb: dockerdb
+	docker tag ${DATABASE}:${VERSION} tehcyx/${DATABASE}:${VERSION}
+	docker tag ${DATABASE}:${VERSION} tehcyx/${DATABASE}:${GIT_COMMIT}
+
+push: pushbackend pushfrontend pushdb
+
+pushbackend: tagbackend
+	docker push tehcyx/${CMP_NAME}:${VERSION}
+	docker push tehcyx/${CMP_NAME}:${GIT_COMMIT}
+
+pushfrontend: tagfrontend
+	docker push tehcyx/${FRONTEND_NAME}:${VERSION}
+	docker push tehcyx/${FRONTEND_NAME}:${GIT_COMMIT}
+
+pushdb: tagdb
+	docker push tehcyx/${DATABASE}:${VERSION}
+	docker push tehcyx/${DATABASE}:${GIT_COMMIT}
 
 install: build
 	go install

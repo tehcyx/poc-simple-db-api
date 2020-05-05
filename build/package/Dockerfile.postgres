@@ -1,0 +1,7 @@
+FROM postgres:11.7-alpine
+
+ARG CMP_NAME
+ARG VERSION
+ARG GIT_COMMIT
+
+COPY init-user-db.sh /docker-entrypoint-initdb.d

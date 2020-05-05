@@ -1,0 +1,4 @@
+db:
+    secret: ""
+    user: "admin"
+    database: "poc"

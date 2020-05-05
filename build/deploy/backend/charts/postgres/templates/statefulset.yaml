@@ -1,39 +1,28 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
    labels:
-      app: simple-db-api
-   name: simple-db-api
+      app: postgres
+   name: postgres
    namespace: {{ .Release.Namespace }}
 spec:
+   serviceName: "postgres"
    replicas: 1
    selector:
       matchLabels:
-         app: simple-db-api
+         app: postgres
    template:
       metadata:
-         labels:    
-            app: simple-db-api
+         labels:
+            app: postgres
          annotations:
             sidecar.istio.io/inject: "true"
-            traffic.sidecar.istio.io/includeInboundPorts: "8080"
+            traffic.sidecar.istio.io/includeInboundPorts: "5432"
       spec:
-         serviceAccountName: simple-db-api-sa
          containers:
-           - name: simple-db-api
-             image: tehcyx/simple-db-api:0.1.0
-             resources:
-                limits:
-                   memory: 512Mi
-             imagePullPolicy: Always              
-             ports:
-              - containerPort: 8080
-                name: http
-             env:
-               - name: POSTGRES_HOST
-                 value: postgres.{{ .Release.Namespace }}
-               - name: POSTGRES_PORT
-                 value: "5432"
+            - name: postgres
+              image: tehcyx/postgres:0.1.0
+              env:
                - name: POSTGRES_DB
                  valueFrom:
                   configMapKeyRef:
@@ -49,3 +38,18 @@ spec:
                   secretKeyRef:
                      name: postgres-secret
                      key: POSTGRES_PASSWORD
+              ports:
+              - containerPort: 5432
+                name: postgredb
+              volumeMounts:
+              - name: postgredb
+                mountPath: /var/lib/postgresql/data
+                subPath: postgres
+   volumeClaimTemplates:
+   - metadata:
+         name: postgresdb
+     spec:
+         accessModes: ["ReadWriteOnce"]
+         resources:
+            requests:
+               storage: 256Mi

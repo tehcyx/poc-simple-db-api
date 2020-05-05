@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"time"
 
 	"github.com/sirupsen/logrus"
 	"github.com/tehcyx/simple-db-api/pkg/logging"
-	"github.com/tehcyx/simple-db-api/pkg/simple-db-api/event"
 	"github.com/tehcyx/simple-db-api/pkg/store"
 )
 
@@ -51,6 +51,7 @@ func (svc *SimpleDBAPI) CreateHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Not implemented"))
 		return
 	}
+
 	log.Debug("parsing request body")
 	reqBody, readErr := ioutil.ReadAll(r.Body)
 	if readErr != nil {
@@ -59,16 +60,21 @@ func (svc *SimpleDBAPI) CreateHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Failed to read content of request")
 		return
 	}
+
 	log.Debug("transforming request body")
-	ev, marshErr := event.GetKymaData(reqBody)
+	var mappedData store.StorageData
+	marshErr := json.Unmarshal(reqBody, &mappedData)
 	if marshErr != nil {
 		log.Info(marshErr)
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, "The received data could not be read")
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to unmarshal json data")
 		return
 	}
+	mappedData.CreatedAt = time.Now()
+	mappedData.RawDataEvent = reqBody
+
 	log.Debug("persisting request")
-	storErr := svc.dataStore.Write(r.Context(), ev)
+	storErr := svc.dataStore.Write(r.Context(), mappedData)
 	if storErr != nil {
 		log.Info(storErr)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -78,7 +84,7 @@ func (svc *SimpleDBAPI) CreateHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug("done > create")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(ev)
+	json.NewEncoder(w).Encode(mappedData)
 
 }
 

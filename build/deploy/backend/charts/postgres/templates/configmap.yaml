@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  labels:
+    app: postgres
+  namespace: {{ .Release.Namespace }}
+data:
+  POSTGRES_DB: {{ .Values.db.database }}
+  POSTGRES_USER: {{ .Values.db.user }}
