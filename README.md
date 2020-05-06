@@ -14,16 +14,20 @@ To start run `make`. This will give you two binaries in the `/bin` folder. One c
     Successfully creating an event on the API will return a 201 JSON response:
     ```
     {
-    "date": "2020-04-30T14:14:23.223079-07:00",
-    "data": "ewoJIm9yZGVyQ29kZSI6ICI0Y2FhZDI5Ni1lMGM1LTQ5MWUtOThhYy0wZWQxMThmOTQ3NGUiCn0="
+        "id": 0,
+        "firstName": "",
+        "lastName": "",
+        "orderCode": "4caad296-e0c5-491e-98ac-0ed118f9474e",
+        "baseSiteId": "an-id"
     }
     ```
 - `/read` an endpoint that returns a JSON array with all stored events
 
 ## Run
 
-### Backend
-Run the backend with `KYMA_URL="localhost" COMMERCE_URL="localhost" ./bin/app`. This will expose the backend on `http://localhost:8080`
+Run the everything with `docker-compose up`. This will expose the backend on `http://localhost:8080` and the frontend on `http://localhost:8081`. In this docker-compose setup the backend will be supported by a postgres database on port 5432.
 
-### Frontend
-Run the frontend with `BACKEND_URL="localhost:8080" ./bin/frontend`. This will expose the frontend on `http://localhost:8081` and point the frontend to talk to the backend. Data on the frontend is live served from the backend.
+If you wish to change the demo setup to run without a database you can do so by using the `InMemoryStore`. Changing the implementation is easily done in the [`cmd\simple-db-api\main.go`](./cmd/simple-db-api/main.go) file, by replacing the service initialisation with this line:
+```
+svc := service.NewSimpleDBAPI().WithStorage(store.NewInMemoryStore())
+```

@@ -1,0 +1,43 @@
+version: '3'
+services:
+    db:
+        image: tehcyx/postgres:e6a87139a74faec0499eec4b1d59c4d2219162d9
+        environment:
+            - POSTGRES_PASSWORD=secretpw
+            - POSTGRES_USER=daniel
+            - POSTGRES_DB=secretdb
+        container_name: postgres
+        ports:
+           - "5432:5432"
+        networks:
+            - gobackend
+    go-backend:
+        image: tehcyx/simple-db-api:e6a87139a74faec0499eec4b1d59c4d2219162d9
+        environment:
+            - POSTGRES_PASSWORD=secretpw
+            - POSTGRES_USER=daniel
+            - POSTGRES_DB=secretdb
+            - POSTGRES_HOST=postgres
+            - POSTGRES_PORT=5432
+        ports:
+            - "8080:8080"
+        container_name: simple-db-api
+        depends_on:
+            - db
+        networks:
+            - gobackend
+    go-frontend:
+        image: tehcyx/simple-db-api-frontend:e6a87139a74faec0499eec4b1d59c4d2219162d9
+        environment: 
+            - BACKEND_URL=http://simple-db-api:8080
+        ports:
+            - "8081:8081"
+        container_name: simple-db-api-frontend
+        depends_on:
+            - go-backend
+        networks:
+            - gobackend
+
+networks:
+    gobackend:
+        driver: bridge
