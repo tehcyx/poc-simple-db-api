@@ -31,3 +31,9 @@ spec:
              env:
               - name: BACKEND_URL
                 value: "http://simple-db-api:8080"
+             livenessProbe:
+               initialDelaySeconds: 3
+               periodSeconds: 3
+               httpGet:
+                  path: /healthz
+                  port: 8080
