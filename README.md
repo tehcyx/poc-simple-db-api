@@ -7,7 +7,7 @@ To start run `make`. This will give you two binaries in the `/bin` folder. One c
 - `/create` an endpoint to POST via JSON an order created event in the form of 
     ```
     {
-        "baseSiteId": "an-id",
+        "baseSiteUid": "an-id",
         "orderCode": "4caad296-e0c5-491e-98ac-0ed118f9474e"
     }
     ```
@@ -18,7 +18,7 @@ To start run `make`. This will give you two binaries in the `/bin` folder. One c
         "firstName": "",
         "lastName": "",
         "orderCode": "4caad296-e0c5-491e-98ac-0ed118f9474e",
-        "baseSiteId": "an-id"
+        "baseSiteUid": "an-id"
     }
     ```
 - `/read` an endpoint that returns a JSON array with all stored events

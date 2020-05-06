@@ -19,7 +19,7 @@ type Order struct {
 	Firstname       string `json:"firstName"`
 	Lastname        string `json:"lastName"`
 	OrderCode       string `json:"orderCode"`
-	BaseSiteID      string `json:"baseSiteId"`
+	BaseSiteUID     string `json:"baseSiteUid"`
 	RawDataEvent    []byte `gorm:"-" json:"-"`
 	RawDataCommerce []byte `gorm:"-" json:"-"`
 }
