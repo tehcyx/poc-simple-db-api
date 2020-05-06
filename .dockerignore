@@ -1,0 +1,28 @@
+# ignore .git and .cache folders
+.git
+.cache
+
+# ignore bin and build folder
+bin/
+build/
+
+# project specific folders
+templates/
+
+# ignore all markdown files (md) beside all README*.md
+*.md
+!README*.md
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+

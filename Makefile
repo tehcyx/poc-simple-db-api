@@ -25,7 +25,7 @@ dockerfrontend:
 	docker tag ${FRONTEND_NAME}:${VERSION} ${FRONTEND_NAME}:${GIT_COMMIT}
 
 dockerdb:
-	docker build -t ${DATABASE}:${VERSION} -f build/package/Dockerfile.${DATABASE} --build-arg CMP_NAME="${DATABASE}" --build-arg VERSION="${VERSION}" --build-arg GIT_COMMIT="${GIT_COMMIT}" .
+	docker build -t ${DATABASE}:${VERSION} -f build/package/Dockerfile.${DATABASE} --build-arg CMP_NAME="${DATABASE}" --build-arg VERSION="${VERSION}" --build-arg GIT_COMMIT="${GIT_COMMIT}" ./${DATABASE}
 	docker tag ${DATABASE}:${VERSION} ${DATABASE}:${GIT_COMMIT}
 
 tag: tagbackend tagfrontend tagdb
