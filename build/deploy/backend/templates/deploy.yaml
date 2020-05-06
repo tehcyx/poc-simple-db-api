@@ -18,20 +18,19 @@ spec:
             sidecar.istio.io/inject: "true"
             traffic.sidecar.istio.io/includeInboundPorts: "8080"
       spec:
-         serviceAccountName: simple-db-api-sa
          containers:
            - name: simple-db-api
              image: tehcyx/simple-db-api:0.1.0
              resources:
                 limits:
                    memory: 512Mi
-             imagePullPolicy: Always              
+             imagePullPolicy: Always
              ports:
               - containerPort: 8080
                 name: http
              env:
                - name: POSTGRES_HOST
-                 value: postgres.{{ .Release.Namespace }}
+                 value: postgres
                - name: POSTGRES_PORT
                  value: "5432"
                - name: POSTGRES_DB

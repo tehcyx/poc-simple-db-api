@@ -59,7 +59,7 @@ func main() {
 	util.MustMapEnv(&DBHost, "POSTGRES_HOST")
 	util.MustMapEnv(&DBPort, "POSTGRES_PORT")
 
-	svc := service.NewSimpleDBAPI().WithStorage(store.NewInMemoryStore())
+	svc := service.NewSimpleDBAPI().WithStorage(store.NewPostgresStore(log, DBUser, DBPass, DBHost, DBPort, DBDBase))
 	// util.MustMapEnv(&svc.KymaURL, "KYMA_URL")
 	// util.MustMapEnv(&svc.CommerceURL, "COMMERCE_URL")
 

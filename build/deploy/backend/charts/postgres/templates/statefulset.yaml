@@ -40,16 +40,11 @@ spec:
                      key: POSTGRES_PASSWORD
               ports:
               - containerPort: 5432
-                name: postgredb
+                name: postgresdb
               volumeMounts:
-              - name: postgredb
+              - name: postgresdb
                 mountPath: /var/lib/postgresql/data
-                subPath: postgres
-   volumeClaimTemplates:
-   - metadata:
-         name: postgresdb
-     spec:
-         accessModes: ["ReadWriteOnce"]
-         resources:
-            requests:
-               storage: 256Mi
+         volumes:
+            - name: postgresdb
+              persistentVolumeClaim:
+                claimName: postgres-pv-claim

@@ -24,8 +24,7 @@ type Postgres struct {
 }
 
 // NewPostgresStore returns an instance of an postgres store
-func NewPostgresStore(user, pass, host, port, db string) *Postgres {
-	log := context.Background().Value(logging.CtxKeyLog{}).(logrus.FieldLogger)
+func NewPostgresStore(log *logrus.Logger, user, pass, host, port, db string) *Postgres {
 	info := &Postgres{user: user, pass: pass, host: host, port: port, db: db}
 
 	maxReconnects := 3
@@ -33,8 +32,8 @@ func NewPostgresStore(user, pass, host, port, db string) *Postgres {
 	var dbHandle *gorm.DB
 	for try := 0; try < maxReconnects; try++ {
 		dbHandle, err = gorm.Open("postgres", info.psqlInfo())
-		if err != nil && try < maxReconnects {
-			backoff := rand.Intn(5)
+		if err != nil && try <= maxReconnects {
+			backoff := rand.Intn(30) + 1
 			log.Error(fmt.Errorf("Could not connect to database: %w, retrying in %d seconds", err, backoff))
 			time.Sleep(time.Second * time.Duration(backoff))
 		}
@@ -44,7 +43,7 @@ func NewPostgresStore(user, pass, host, port, db string) *Postgres {
 	}
 	info.Handle = dbHandle
 
-	dbHandle.AutoMigrate(&Order{}) // Create a table for commerce orders
+	dbHandle.AutoMigrate(&StorageData{}) // Create a table for commerce orders
 
 	return info
 }
@@ -57,7 +56,7 @@ func (p *Postgres) psqlInfo() string {
 func (p *Postgres) Write(ctx context.Context, data StorageData) error {
 	log := ctx.Value(logging.CtxKeyLog{}).(logrus.FieldLogger)
 	log.Debugf("writing: %+v", data)
-	p.Handle.Create(data)
+	p.Handle.Create(&data)
 	return nil
 }
 
@@ -65,7 +64,10 @@ func (p *Postgres) Write(ctx context.Context, data StorageData) error {
 func (p *Postgres) ReadAll(ctx context.Context) ([]StorageData, error) {
 	log := ctx.Value(logging.CtxKeyLog{}).(logrus.FieldLogger)
 	var res []StorageData
-	p.Handle.Find(&res)
+	err := p.Handle.Find(&res).Error
+	if err != nil {
+		return nil, fmt.Errorf("Failed to retrieve data from database: %w", err)
+	}
 	log.Debugf("reading: %+v", res)
 	return res, nil
 }
