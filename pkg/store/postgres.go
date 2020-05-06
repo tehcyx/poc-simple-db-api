@@ -43,6 +43,7 @@ func NewPostgresStore(log *logrus.Logger, user, pass, host, port, db string) *Po
 	}
 	info.Handle = dbHandle
 
+	dbHandle.Debug()
 	dbHandle.AutoMigrate(&StorageData{}) // Create a table for commerce orders
 
 	return info
@@ -55,13 +56,19 @@ func (p *Postgres) psqlInfo() string {
 // Write writes the storage object to the postgres store
 func (p *Postgres) Write(ctx context.Context, data StorageData) error {
 	log := ctx.Value(logging.CtxKeyLog{}).(logrus.FieldLogger)
-	log.Infof("writing: %+v", data)
-	createErr := p.Handle.Create(&data).Error
-	if createErr != nil {
-		err := fmt.Errorf("Couldn't create record: %w", createErr)
+	log.Debugf("writing: %+v", data)
+
+	log.Infof("Is this new? %b", p.Handle.NewRecord(data)) // => returns `true` as primary key is blank
+	createErrs := p.Handle.Create(&data).GetErrors()
+	for _, e := range createErrs {
+		err := fmt.Errorf("Couldn't create record: %w", e)
 		log.Error(err)
 		return err
 	}
+	log.Infof("Is this new? %b", p.Handle.NewRecord(data)) // => returns `false` as primary key is not blank
+
+	log.Infof("wrote: %+v", data)
+
 	return nil
 }
 

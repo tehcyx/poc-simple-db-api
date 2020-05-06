@@ -7,10 +7,10 @@ import (
 
 // Model represents basic fields for all persisted values
 type Model struct {
-	ID        uint      `gorm:"primary_key,auto_increment" json:"id"`
-	CreatedAt time.Time `json:"-"`
-	UpdatedAt time.Time `json:"-"`
-	DeletedAt time.Time `sql:"index" json:"-"`
+	ID        uint       `gorm:"primary_key,auto_increment" json:"id"`
+	CreatedAt time.Time  `json:"-"`
+	UpdatedAt time.Time  `json:"-"`
+	DeletedAt *time.Time `sql:"index" json:"-"`
 }
 
 // Order represents a Commerce Order

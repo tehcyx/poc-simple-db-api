@@ -6,9 +6,6 @@
 bin/
 build/
 
-# project specific folders
-templates/
-
 # ignore all markdown files (md) beside all README*.md
 *.md
 !README*.md

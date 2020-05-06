@@ -18,16 +18,20 @@
                         <thead>
                             <tr>
                                 <th scope="col">#</th>
-                                <th scope="col">Date</th>
-                                <th scope="col">Data</th>
+                                <th scope="col">Firstname</th>
+                                <th scope="col">Lastname</th>
+                                <th scope="col">OrderCode</th>
+                                <th scope="col">BaseSiteID</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {{range $i, $e := .APIData}}
+                            {{range .APIData}}
                             <tr>
-                                <th scope="row">{{$i}}</th>
-                                <td>{{.Date}}</td>
-                                <td>{{(toString .Data)}}</td>
+                                <th scope="row">{{.ID}}</th>
+                                <td>{{.Firstname}}</td>
+                                <td>{{.Lastname}}</td>
+                                <td>{{.OrderCode}}</td>
+                                <td>{{.BaseSiteID}}</td>
                             </tr>
                             {{end}}
                         </tbody>

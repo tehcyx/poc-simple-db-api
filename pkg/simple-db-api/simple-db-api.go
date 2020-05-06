@@ -70,7 +70,6 @@ func (svc *SimpleDBAPI) CreateHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Failed to unmarshal json data")
 		return
 	}
-	log.Infof("unmarshalled %+v from the incoming request", mappedData)
 	mappedData.CreatedAt = time.Now()
 	mappedData.RawDataEvent = reqBody
 
@@ -86,7 +85,6 @@ func (svc *SimpleDBAPI) CreateHandler(w http.ResponseWriter, r *http.Request) {
 	log.Debug("done > create")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(mappedData)
-
 }
 
 // ReadHandler handles GET requests to read data from datastore persistence
