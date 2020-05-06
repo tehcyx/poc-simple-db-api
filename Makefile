@@ -1,7 +1,7 @@
 .PHONY: build
 
-VERSION=$(shell cat VERSION)
-GIT_COMMIT=$(shell git rev-list -1 HEAD)
+VERSION:=$(if ${VERSION},${VERSION},$(shell cat VERSION))
+GIT_COMMIT:=$(if ${GIT_COMMIT},${GIT_COMMIT},$(shell git rev-list -1 HEAD))
 CMP_NAME=simple-db-api
 FRONTEND_NAME=simple-db-api-frontend
 DATABASE=postgres
@@ -25,7 +25,7 @@ dockerfrontend:
 	docker tag ${FRONTEND_NAME}:${VERSION} ${FRONTEND_NAME}:${GIT_COMMIT}
 
 dockerdb:
-	docker build -t ${DATABASE}:${VERSION} -f build/package/Dockerfile.${DATABASE} --build-arg CMP_NAME="${DATABASE}" --build-arg VERSION="${VERSION}" --build-arg GIT_COMMIT="${GIT_COMMIT}" ./${DATABASE}
+	docker build -t ${DATABASE}:${VERSION} -f build/package/Dockerfile.${DATABASE} --build-arg CMP_NAME="${DATABASE}" --build-arg VERSION="${VERSION}" --build-arg GIT_COMMIT="${GIT_COMMIT}" .
 	docker tag ${DATABASE}:${VERSION} ${DATABASE}:${GIT_COMMIT}
 
 tag: tagbackend tagfrontend tagdb

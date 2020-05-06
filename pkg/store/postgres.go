@@ -56,7 +56,10 @@ func (p *Postgres) psqlInfo() string {
 func (p *Postgres) Write(ctx context.Context, data StorageData) error {
 	log := ctx.Value(logging.CtxKeyLog{}).(logrus.FieldLogger)
 	log.Debugf("writing: %+v", data)
-	p.Handle.Create(&data)
+	createErr := p.Handle.Create(&data).Error
+	if createErr != nil {
+		return fmt.Errorf("Couldn't create record: %w", createErr)
+	}
 	return nil
 }
 

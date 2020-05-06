@@ -63,13 +63,14 @@ func (svc *SimpleDBAPI) CreateHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug("transforming request body")
 	var mappedData store.StorageData
-	marshErr := json.Unmarshal(reqBody, &mappedData)
+	marshErr := json.Unmarshal(reqBody, &mappedData) // marshalling problem????
 	if marshErr != nil {
 		log.Info(marshErr)
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "Failed to unmarshal json data")
 		return
 	}
+	log.Infof("unmarshalled %+v from the incoming request", mappedData)
 	mappedData.CreatedAt = time.Now()
 	mappedData.RawDataEvent = reqBody
 
