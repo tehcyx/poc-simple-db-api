@@ -36,4 +36,4 @@ spec:
                periodSeconds: 3
                httpGet:
                   path: /healthz
-                  port: 8080
+                  port: 8081

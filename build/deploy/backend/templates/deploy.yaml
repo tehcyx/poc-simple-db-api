@@ -50,8 +50,7 @@ spec:
                      key: POSTGRES_PASSWORD
              livenessProbe:
                initialDelaySeconds: 3
-               periodSeconds: 3
+               periodSeconds: 10
                httpGet:
                   path: /healthz
                   port: 8080
-               
