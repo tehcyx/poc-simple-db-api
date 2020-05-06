@@ -73,6 +73,23 @@ func (svc *SimpleDBAPI) CreateHandler(w http.ResponseWriter, r *http.Request) {
 	mappedData.CreatedAt = time.Now()
 	mappedData.RawDataEvent = reqBody
 
+	valErr := mappedData.Validate()
+	if valErr != nil {
+		log.Info(valErr)
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "One or more fields are missing to fulfill this request [orderCode, baseSiteUid]")
+	}
+
+	if svc.CommerceURL != "" {
+		ordersURL := fmt.Sprintf("%s/%s/orders/%s", svc.CommerceURL, mappedData.BaseSiteUID, mappedData.OrderCode)
+		enrichErr := mappedData.Enrich(r.Context(), ordersURL)
+		if enrichErr != nil {
+			log.Info(enrichErr)
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(w, "Failed to enrich order data with commerce data")
+		}
+	}
+
 	log.Debug("persisting request")
 	storErr := svc.dataStore.Write(r.Context(), mappedData)
 	if storErr != nil {

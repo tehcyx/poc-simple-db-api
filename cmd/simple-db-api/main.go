@@ -59,8 +59,12 @@ func main() {
 	util.MustMapEnv(&DBPort, "POSTGRES_PORT")
 
 	svc := service.NewSimpleDBAPI().WithStorage(store.NewPostgresStore(log, DBUser, DBPass, DBHost, DBPort, DBDBase))
-	// util.MustMapEnv(&svc.KymaURL, "KYMA_URL")
-	// util.MustMapEnv(&svc.CommerceURL, "COMMERCE_URL")
+
+	if url := os.Getenv("GATEWAY_URL"); url != "" {
+		svc.CommerceURL = url
+	} else {
+		log.Infof("GATEWAY_URL is not set, skipping calls to commerce backend")
+	}
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", svc.IndexHandler).Methods(http.MethodHead, http.MethodGet)
