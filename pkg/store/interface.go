@@ -45,6 +45,7 @@ type Storage interface {
 type commerceResponse struct {
 }
 
+// Validate ensures, that the required parameters for subsequent calls are set
 func (o Order) Validate() error {
 	if o.BaseSiteUID == "" {
 		return fmt.Errorf("Order not valid without a baseSiteUid")
@@ -55,8 +56,13 @@ func (o Order) Validate() error {
 	return nil
 }
 
+// Enrich will add order details of a subsequent call to an external system into the datastructure
 func (o Order) Enrich(ctx context.Context, url string) error {
 	log := ctx.Value(logging.CtxKeyLog{}).(logrus.FieldLogger)
+	if err := o.Validate(); err != nil {
+		log.Errorf("Can't produce subsequent order detail call, minimum requirements are not met.")
+		return fmt.Errorf("Can't produce subsequent order detail call, minimum requirements are not met: %w", err)
+	}
 	client := http.Client{Timeout: 30 * time.Second}
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {

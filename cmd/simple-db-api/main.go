@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"time"
 
@@ -80,6 +81,13 @@ func main() {
 
 	var handler http.Handler = r
 	handler = &logging.LogHandler{Log: log, Next: handler} // add logging
+
+	if os.Getenv("DISABLE_PROFILER") == "" {
+		log.Info("Profiling enabled")
+		r.PathPrefix("/debug").Handler(http.DefaultServeMux)
+	} else {
+		log.Info("Profiling disabled")
+	}
 
 	log.Infof("starting simple-db-api on " + addr + ":" + srvPort)
 	log.Fatal(http.ListenAndServe(addr+":"+srvPort, handler))
