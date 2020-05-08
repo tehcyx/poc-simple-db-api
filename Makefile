@@ -83,15 +83,12 @@ cover-unit:
 	go test -v ./... -cover -race 2>&1 | go run github.com/jstemmer/go-junit-report > report_cover.xml
 
 bench:
-	mkdir -p debug/
 	go test -v -bench . -benchmem ./...
 
 bench-race:
-	mkdir -p debug/
 	go test -v -bench . -benchmem ./... -race
 
 bench-unit:
-	mkdir -p debug/
 	go test -v -bench . -benchmem ./... -race 2>&1 | go run github.com/jstemmer/go-junit-report > report_bench.xml
 
 clean:
