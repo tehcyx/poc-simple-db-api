@@ -61,7 +61,7 @@ func (o Order) Validate() error {
 	return nil
 }
 
-func (o Order) Enrich(ctx context.Context, url string) error {
+func (o *Order) Enrich(ctx context.Context, url string) error {
 	log := ctx.Value(logging.CtxKeyLog{}).(logrus.FieldLogger)
 	client := http.Client{Timeout: 30 * time.Second}
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
