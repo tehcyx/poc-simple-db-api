@@ -42,8 +42,7 @@ type Storage interface {
 	ReadAll(context.Context) ([]StorageData, error)
 }
 
-type commerceResponse struct {
-}
+type commerceResponse interface{}
 
 func (o Order) Validate() error {
 	if o.BaseSiteUID == "" {
@@ -64,6 +63,8 @@ func (o Order) Enrich(ctx context.Context, url string) error {
 		log.Error("Constructing API request failed")
 		return fmt.Errorf("Couldn't create request")
 	}
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/json")
 	log.Info("Executing request to commerce")
 	response, clientErr := client.Do(req)
 	if clientErr != nil {
@@ -80,6 +81,8 @@ func (o Order) Enrich(ctx context.Context, url string) error {
 		return fmt.Errorf("Failed to read response: %w", readErr)
 	}
 
+	o.RawDataCommerce = responseByteArray
+
 	log.Info("Unmarshalling response")
 	var cresp commerceResponse
 	marshErr := json.Unmarshal(responseByteArray, &cresp)
@@ -92,8 +95,6 @@ func (o Order) Enrich(ctx context.Context, url string) error {
 	// fill orderdata fields here with more info
 	// o.Firstname = ... cresp.something.firstname
 	// o.Lastname = ... cresp.something.lastname
-
-	o.RawDataCommerce = responseByteArray
 
 	return nil
 }
