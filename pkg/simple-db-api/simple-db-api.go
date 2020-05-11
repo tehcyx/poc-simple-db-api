@@ -89,6 +89,7 @@ func (svc *SimpleDBAPI) CreateHandler(w http.ResponseWriter, r *http.Request) {
 			log.Info(enrichErr)
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprintf(w, "Failed to enrich order data with commerce data")
+			return
 		}
 	}
 

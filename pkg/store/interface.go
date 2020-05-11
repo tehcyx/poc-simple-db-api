@@ -42,7 +42,14 @@ type Storage interface {
 	ReadAll(context.Context) ([]StorageData, error)
 }
 
-type commerceResponse interface{}
+type CommerceResponse struct {
+	DeliveryAddress Address `json:"deliveryAddress"`
+}
+
+type Address struct {
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+}
 
 func (o Order) Validate() error {
 	if o.BaseSiteUID == "" {
@@ -57,7 +64,6 @@ func (o Order) Validate() error {
 func (o Order) Enrich(ctx context.Context, url string) error {
 	log := ctx.Value(logging.CtxKeyLog{}).(logrus.FieldLogger)
 	client := http.Client{Timeout: 30 * time.Second}
-	log.Info("Building request to commerce")
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		log.Error("Constructing API request failed")
@@ -65,7 +71,6 @@ func (o Order) Enrich(ctx context.Context, url string) error {
 	}
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
-	log.Info("Executing request to commerce")
 	response, clientErr := client.Do(req)
 	if clientErr != nil {
 		log.Error(clientErr)
@@ -73,7 +78,6 @@ func (o Order) Enrich(ctx context.Context, url string) error {
 	}
 	defer response.Body.Close()
 
-	log.Info("Reading response from commerce")
 	// Reading the response
 	responseByteArray, readErr := ioutil.ReadAll(response.Body)
 	if readErr != nil {
@@ -83,18 +87,16 @@ func (o Order) Enrich(ctx context.Context, url string) error {
 
 	o.RawDataCommerce = responseByteArray
 
-	log.Info("Unmarshalling response")
-	var cresp commerceResponse
+	var cresp CommerceResponse
 	marshErr := json.Unmarshal(responseByteArray, &cresp)
 	if marshErr != nil {
 		log.Error(marshErr)
 		return fmt.Errorf("Failed to parse response json: %w", marshErr)
 	}
 
-	log.Info("write data")
 	// fill orderdata fields here with more info
-	// o.Firstname = ... cresp.something.firstname
-	// o.Lastname = ... cresp.something.lastname
+	o.Firstname = cresp.DeliveryAddress.FirstName
+	o.Lastname = cresp.DeliveryAddress.LastName
 
 	return nil
 }
