@@ -85,7 +85,7 @@ func (o *Order) Enrich(ctx context.Context, url string) error {
 		return fmt.Errorf("Failed to read response: %w", readErr)
 	}
 
-	log.Infof("Got response from commerce: %+v", string(responseByteArray))
+	log.Debugf("Response from commerce: %+v", string(responseByteArray))
 
 	o.RawDataCommerce = responseByteArray
 
