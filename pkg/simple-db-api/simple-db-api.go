@@ -80,8 +80,10 @@ func (svc *SimpleDBAPI) CreateHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "One or more fields are missing to fulfill this request [orderCode, baseSiteUid]")
 	}
 
+	log.Infof("Commerce URL: %s", svc.CommerceURL)
 	if svc.CommerceURL != "" {
 		ordersURL := fmt.Sprintf("%s/%s/orders/%s", svc.CommerceURL, mappedData.BaseSiteUID, mappedData.OrderCode)
+		log.Infof("Order URL: %s", ordersURL)
 		enrichErr := mappedData.Enrich(r.Context(), ordersURL)
 		if enrichErr != nil {
 			log.Info(enrichErr)
