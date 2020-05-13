@@ -121,6 +121,21 @@ func (svc *SimpleDBAPI) ReadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fake := store.StorageData{
+		Order: store.Order{
+			Model: store.Model{
+				ID: 240,
+			},
+			BaseSiteUID: "ralfs-store",
+			Firstname:   "Erika",
+			Lastname:    "Mustermann",
+			OrderCode:   "order-1",
+			Items:       []store.Item{{Model: store.Model{ID: 1}, Name: "Hydraulic Oil", Quantity: 12}},
+		},
+	}
+
+	data = append(data, fake)
+
 	log.Debug("done > read")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
