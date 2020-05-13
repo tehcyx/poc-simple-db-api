@@ -27,8 +27,16 @@ type Order struct {
 	Lastname        string `json:"lastName"`
 	OrderCode       string `json:"orderCode"`
 	BaseSiteUID     string `json:"baseSiteUid"`
+	Items           []Item `json:"items"`
 	RawDataEvent    []byte `gorm:"-" json:"-"`
 	RawDataCommerce []byte `gorm:"-" json:"-"`
+}
+
+// Item represents a Commerce Order line item
+type Item struct {
+	Model
+	Name     string `json:"name"`
+	Quantity int    `json:"quantity"`
 }
 
 // StorageData should hold arbitrary data, nothing fine-grained at the moment
@@ -44,11 +52,21 @@ type Storage interface {
 
 type CommerceResponse struct {
 	DeliveryAddress Address `json:"deliveryAddress"`
+	Entries         []Entry `json:"entries"`
 }
 
 type Address struct {
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
+}
+
+type Entry struct {
+	Quantity int `json:"quantity"`
+	Product  Product
+}
+
+type Product struct {
+	Name string `json:"name"`
 }
 
 func (o Order) Validate() error {
@@ -99,6 +117,10 @@ func (o *Order) Enrich(ctx context.Context, url string) error {
 	// fill orderdata fields here with more info
 	o.Firstname = cresp.DeliveryAddress.FirstName
 	o.Lastname = cresp.DeliveryAddress.LastName
+
+	for _, i := range cresp.Entries {
+		o.Items = append(o.Items, Item{Name: i.Product.Name, Quantity: i.Quantity})
+	}
 
 	return nil
 }
