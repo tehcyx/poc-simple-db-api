@@ -47,8 +47,8 @@ type StorageData struct {
 
 // Storage is an interface to support handling of different storage options
 type Storage interface {
-	Write(context.Context, StorageData) error
-	ReadAll(context.Context) ([]StorageData, error)
+	Write(context.Context, Order) error
+	ReadAll(context.Context) ([]Order, error)
 }
 
 type CommerceResponse struct {

@@ -62,7 +62,7 @@ func (svc *SimpleDBAPI) CreateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Debug("transforming request body")
-	var mappedData store.StorageData
+	var mappedData store.Order
 	marshErr := json.Unmarshal(reqBody, &mappedData) // marshalling problem????
 	if marshErr != nil {
 		log.Info(marshErr)
@@ -120,21 +120,6 @@ func (svc *SimpleDBAPI) ReadHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Failed to read data due to some internal problem")
 		return
 	}
-
-	fake := store.StorageData{
-		Order: store.Order{
-			Model: store.Model{
-				ID: 240,
-			},
-			BaseSiteUID: "ralfs-store",
-			Firstname:   "Erika",
-			Lastname:    "Mustermann",
-			OrderCode:   "order-1",
-			Items:       []store.Item{{Model: store.Model{ID: 1}, Name: "Hydraulic Oil", Quantity: 12}},
-		},
-	}
-
-	data = append(data, fake)
 
 	log.Debug("done > read")
 	w.Header().Set("Content-Type", "application/json")

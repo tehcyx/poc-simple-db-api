@@ -9,7 +9,7 @@ import (
 
 // InMemory simply holds data for the runtime of the application
 type InMemory struct {
-	data []StorageData
+	data []Order
 }
 
 // NewInMemoryStore returns an instance of an inmemory store
@@ -18,7 +18,7 @@ func NewInMemoryStore() *InMemory {
 }
 
 // Write writes the storage object to the in memory store
-func (im *InMemory) Write(ctx context.Context, data StorageData) error {
+func (im *InMemory) Write(ctx context.Context, data Order) error {
 	log := ctx.Value(logging.CtxKeyLog{}).(logrus.FieldLogger)
 	log.Debugf("writing: %+v", data)
 	im.data = append(im.data, data)
@@ -26,7 +26,7 @@ func (im *InMemory) Write(ctx context.Context, data StorageData) error {
 }
 
 // ReadAll returns all data stored in memory
-func (im *InMemory) ReadAll(ctx context.Context) ([]StorageData, error) {
+func (im *InMemory) ReadAll(ctx context.Context) ([]Order, error) {
 	log := ctx.Value(logging.CtxKeyLog{}).(logrus.FieldLogger)
 	log.Debugf("reading: %+v", im.data)
 	return im.data, nil
