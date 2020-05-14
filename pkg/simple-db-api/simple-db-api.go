@@ -126,3 +126,34 @@ func (svc *SimpleDBAPI) ReadHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(data)
 }
+
+// FakeHandler on GET creates a fake entry
+func (svc *SimpleDBAPI) FakeHandler(w http.ResponseWriter, r *http.Request) {
+	log := r.Context().Value(logging.CtxKeyLog{}).(logrus.FieldLogger)
+	log.Info("fakeit handler")
+
+	fake := store.Order{
+		Firstname:   "Erika",
+		Lastname:    "Mustermann",
+		OrderCode:   "fake-code",
+		BaseSiteUID: "fake-site",
+		Items: []store.Item{
+			{Name: "fakeItem-in-order-03", Quantity: 1},
+			{Name: "fakeItem-in-order-02", Quantity: 32},
+			{Name: "fakeItem-in-order-05", Quantity: 12},
+		},
+	}
+
+	storErr := svc.dataStore.Write(r.Context(), fake)
+	if storErr != nil {
+		log.Info(storErr)
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to persist data due to some internal problem")
+		return
+	}
+
+	log.Debug("done > read")
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(fake)
+}
