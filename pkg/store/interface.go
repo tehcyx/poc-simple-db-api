@@ -37,6 +37,7 @@ type Item struct {
 	Model
 	Name     string `json:"name"`
 	Quantity int    `json:"quantity"`
+	OrderID  uint
 }
 
 // StorageData should hold arbitrary data, nothing fine-grained at the moment
@@ -61,12 +62,13 @@ type Address struct {
 }
 
 type Entry struct {
-	Quantity int `json:"quantity"`
-	Product  Product
+	Quantity int     `json:"quantity"`
+	Product  Product `json:"product"`
 }
 
 type Product struct {
 	Name string `json:"name"`
+	Code string `json:"code"`
 }
 
 func (o Order) Validate() error {
@@ -119,7 +121,7 @@ func (o *Order) Enrich(ctx context.Context, url string) error {
 	o.Lastname = cresp.DeliveryAddress.LastName
 
 	for _, i := range cresp.Entries {
-		o.Items = append(o.Items, Item{Name: i.Product.Name, Quantity: i.Quantity})
+		o.Items = append(o.Items, Item{Name: i.Product.Code, Quantity: i.Quantity})
 	}
 
 	return nil

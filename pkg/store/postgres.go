@@ -46,8 +46,12 @@ func NewPostgresStore(log *logrus.Logger, user, pass, host, port, db string) *Po
 	dbHandle = dbHandle.Debug()
 	// dbHandle.AutoMigrate(&StorageData{}) // Create a table for commerce orders
 
-	dbHandle.DropTableIfExists(&StorageData{}) // drops table and old data
-	dbHandle.CreateTable(&StorageData{})       // recreates tables
+	// drops table and old data
+	dbHandle.DropTableIfExists(&Item{})
+	dbHandle.DropTableIfExists(&StorageData{})
+
+	dbHandle.CreateTable(&StorageData{}) // recreates tables
+	dbHandle.CreateTable(&Item{})
 
 	return info
 }
