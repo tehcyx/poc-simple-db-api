@@ -1,7 +1,7 @@
 version: '3'
 services:
     db:
-        image: tehcyx/postgres:0.4.2
+        image: tehcyx/postgres:0.4.3
         environment:
             - POSTGRES_PASSWORD=secretpw
             - POSTGRES_USER=daniel
@@ -12,7 +12,7 @@ services:
         networks:
             - gobackend
     go-backend:
-        image: tehcyx/simple-db-api:0.4.2
+        image: tehcyx/simple-db-api:0.4.3
         environment:
             - POSTGRES_PASSWORD=secretpw
             - POSTGRES_USER=daniel
@@ -27,7 +27,7 @@ services:
         networks:
             - gobackend
     go-frontend:
-        image: tehcyx/simple-db-api-frontend:0.4.2
+        image: tehcyx/simple-db-api-frontend:0.4.3
         environment: 
             - BACKEND_URL=http://simple-db-api:8080
         ports:

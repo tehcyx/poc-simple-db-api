@@ -37,11 +37,24 @@
                                     {{if not .Items}}
                                     Order does not contain items
                                     {{else}}
-                                    <ul>
-                                        {{range .Items}}
-                                        <li>ID: {{.ID}}, Name: {{.Name}}, Quantity: {{.Quantity}}</li>
-                                        {{end}}  
-                                    </ul>
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">#</th>
+                                                <th scope="col">Name</th>
+                                                <th scope="col">Quantity</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {{range .Items}}
+                                            <tr>
+                                                <th scope="row">{{.ID}}</th>
+                                                <td>{{.Name}}</td>
+                                                <td>{{.Quantity}}</td>
+                                            </tr>
+                                            {{end}}
+                                        </tbody>
+                                    </table>
                                     {{end}}
                                 </td>
                             </tr>

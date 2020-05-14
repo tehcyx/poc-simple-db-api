@@ -21,7 +21,7 @@ spec:
       spec:
          containers:
             - name: postgres
-              image: tehcyx/postgres:0.4.2
+              image: tehcyx/postgres:0.4.3
               env:
                - name: POSTGRES_DB
                  valueFrom:
