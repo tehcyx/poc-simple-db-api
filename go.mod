@@ -8,5 +8,5 @@ require (
 	github.com/jinzhu/gorm v1.9.12
 	github.com/lib/pq v1.5.1
 	github.com/sirupsen/logrus v1.5.0
-	github.com/stretchr/testify v1.3.0 // indirect
+	github.com/stretchr/testify v1.3.0
 )

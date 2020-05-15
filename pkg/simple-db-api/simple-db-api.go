@@ -47,7 +47,7 @@ func (svc *SimpleDBAPI) CreateHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	if r.Method != http.MethodPost {
-		w.WriteHeader(http.StatusNotImplemented)
+		w.WriteHeader(http.StatusMethodNotAllowed)
 		w.Write([]byte("Not implemented"))
 		return
 	}
@@ -66,7 +66,7 @@ func (svc *SimpleDBAPI) CreateHandler(w http.ResponseWriter, r *http.Request) {
 	marshErr := json.Unmarshal(reqBody, &mappedData) // marshalling problem????
 	if marshErr != nil {
 		log.Info(marshErr)
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(w, "Failed to unmarshal json data")
 		return
 	}
@@ -111,6 +111,13 @@ func (svc *SimpleDBAPI) CreateHandler(w http.ResponseWriter, r *http.Request) {
 func (svc *SimpleDBAPI) ReadHandler(w http.ResponseWriter, r *http.Request) {
 	log := r.Context().Value(logging.CtxKeyLog{}).(logrus.FieldLogger)
 	log.Info("read handler")
+
+	w.Header().Set("Content-Type", "application/json")
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		w.Write([]byte("Not implemented"))
+		return
+	}
 
 	log.Debug("reading data")
 	data, storErr := svc.dataStore.ReadAll(r.Context())
