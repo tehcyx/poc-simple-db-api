@@ -27,8 +27,17 @@ type Order struct {
 	Lastname        string `json:"lastName"`
 	OrderCode       string `json:"orderCode"`
 	BaseSiteUID     string `json:"baseSiteUid"`
+	Items           []Item `json:"items"`
 	RawDataEvent    []byte `gorm:"-" json:"-"`
 	RawDataCommerce []byte `gorm:"-" json:"-"`
+}
+
+// Item represents a Commerce Order line item
+type Item struct {
+	Model
+	Name     string `json:"name"`
+	Quantity int    `json:"quantity"`
+	OrderID  uint
 }
 
 // StorageData should hold arbitrary data, nothing fine-grained at the moment
@@ -38,11 +47,28 @@ type StorageData struct {
 
 // Storage is an interface to support handling of different storage options
 type Storage interface {
-	Write(context.Context, StorageData) error
-	ReadAll(context.Context) ([]StorageData, error)
+	Write(context.Context, Order) error
+	ReadAll(context.Context) ([]Order, error)
 }
 
-type commerceResponse struct {
+type CommerceResponse struct {
+	DeliveryAddress Address `json:"deliveryAddress"`
+	Entries         []Entry `json:"entries"`
+}
+
+type Address struct {
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+}
+
+type Entry struct {
+	Quantity int     `json:"quantity"`
+	Product  Product `json:"product"`
+}
+
+type Product struct {
+	Name string `json:"name"`
+	Code string `json:"code"`
 }
 
 // Validate ensures, that the required parameters for subsequent calls are set
@@ -56,8 +82,7 @@ func (o Order) Validate() error {
 	return nil
 }
 
-// Enrich will add order details of a subsequent call to an external system into the datastructure
-func (o Order) Enrich(ctx context.Context, url string) error {
+func (o *Order) Enrich(ctx context.Context, url string) error {
 	log := ctx.Value(logging.CtxKeyLog{}).(logrus.FieldLogger)
 	if err := o.Validate(); err != nil {
 		log.Errorf("Can't produce subsequent order detail call, minimum requirements are not met.")
@@ -69,6 +94,8 @@ func (o Order) Enrich(ctx context.Context, url string) error {
 		log.Error("Constructing API request failed")
 		return fmt.Errorf("Couldn't create request")
 	}
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/json")
 	response, clientErr := client.Do(req)
 	if clientErr != nil {
 		log.Error(clientErr)
@@ -83,7 +110,11 @@ func (o Order) Enrich(ctx context.Context, url string) error {
 		return fmt.Errorf("Failed to read response: %w", readErr)
 	}
 
-	var cresp commerceResponse
+	log.Debugf("Response from commerce: %+v", string(responseByteArray))
+
+	o.RawDataCommerce = responseByteArray
+
+	var cresp CommerceResponse
 	marshErr := json.Unmarshal(responseByteArray, &cresp)
 	if marshErr != nil {
 		log.Error(marshErr)
@@ -91,9 +122,12 @@ func (o Order) Enrich(ctx context.Context, url string) error {
 	}
 
 	// fill orderdata fields here with more info
-	// o.Firstname = ... cresp.something.firstname
-	// o.Lastname = ... cresp.something.lastname
-	o.RawDataCommerce = responseByteArray
+	o.Firstname = cresp.DeliveryAddress.FirstName
+	o.Lastname = cresp.DeliveryAddress.LastName
+
+	for _, i := range cresp.Entries {
+		o.Items = append(o.Items, Item{Name: i.Product.Code, Quantity: i.Quantity})
+	}
 
 	return nil
 }

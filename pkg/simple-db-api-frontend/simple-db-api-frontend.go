@@ -71,7 +71,7 @@ func (svc *SimpleDBAPIFrontend) IndexHandler(w http.ResponseWriter, r *http.Requ
 		fmt.Fprintf(w, "Failed to read content of request")
 		return
 	}
-	var events []store.StorageData
+	var events []store.Order
 	marshErr := json.Unmarshal(responseByteArray, &events)
 	if marshErr != nil {
 		log.Info(marshErr)

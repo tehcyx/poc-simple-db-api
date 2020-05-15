@@ -71,6 +71,7 @@ func main() {
 	r.HandleFunc("/", svc.IndexHandler).Methods(http.MethodHead, http.MethodGet)
 	r.HandleFunc("/create", svc.CreateHandler).Methods(http.MethodHead, http.MethodPost)
 	r.HandleFunc("/read", svc.ReadHandler).Methods(http.MethodHead, http.MethodGet)
+	r.HandleFunc("/fakeit", svc.FakeHandler).Methods(http.MethodHead, http.MethodGet)
 
 	// r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 	r.HandleFunc("/robots.txt", func(w http.ResponseWriter, _ *http.Request) { fmt.Fprint(w, "User-agent: *\nDisallow: /") })

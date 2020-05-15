@@ -43,8 +43,11 @@ func NewPostgresStore(log *logrus.Logger, user, pass, host, port, db string) *Po
 	}
 	info.Handle = dbHandle
 
-	dbHandle.Debug()
-	dbHandle.AutoMigrate(&StorageData{}) // Create a table for commerce orders
+	// dbHandle = dbHandle.Debug() // enable debugging on DB level
+	dbHandle.AutoMigrate(&Order{}, &Item{}) // Create a table for commerce orders
+
+	// dbHandle.DropTableIfExists(&Item{}, &Order{}) // drops table and old data
+	// dbHandle.CreateTable(&Order{}, &Item{})       // recreates tables
 
 	return info
 }
@@ -54,29 +57,27 @@ func (p *Postgres) psqlInfo() string {
 }
 
 // Write writes the storage object to the postgres store
-func (p *Postgres) Write(ctx context.Context, data StorageData) error {
+func (p *Postgres) Write(ctx context.Context, data Order) error {
 	log := ctx.Value(logging.CtxKeyLog{}).(logrus.FieldLogger)
 	log.Debugf("writing: %+v", data)
 
-	log.Infof("Is this new? %b", p.Handle.NewRecord(data)) // => returns `true` as primary key is blank
 	createErrs := p.Handle.Create(&data).GetErrors()
 	for _, e := range createErrs {
 		err := fmt.Errorf("Couldn't create record: %w", e)
 		log.Error(err)
 		return err
 	}
-	log.Infof("Is this new? %b", p.Handle.NewRecord(data)) // => returns `false` as primary key is not blank
-
-	log.Infof("wrote: %+v", data)
+	log.Info("Succesfully persisted in DB")
+	log.Debugf("wrote: %+v", data)
 
 	return nil
 }
 
 // ReadAll returns all data stored postgres
-func (p *Postgres) ReadAll(ctx context.Context) ([]StorageData, error) {
+func (p *Postgres) ReadAll(ctx context.Context) ([]Order, error) {
 	log := ctx.Value(logging.CtxKeyLog{}).(logrus.FieldLogger)
-	var res []StorageData
-	err := p.Handle.Find(&res).Error
+	var res []Order
+	err := p.Handle.Set("gorm:auto_preload", true).Find(&res).Error
 	if err != nil {
 		return nil, fmt.Errorf("Failed to retrieve data from database: %w", err)
 	}

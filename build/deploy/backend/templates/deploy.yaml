@@ -20,7 +20,7 @@ spec:
       spec:
          containers:
            - name: simple-db-api
-             image: tehcyx/simple-db-api:0.1.0
+             image: tehcyx/simple-db-api:0.4.3
              resources:
                 limits:
                    memory: 512Mi
@@ -30,7 +30,7 @@ spec:
                 name: http
              env:
                - name: POSTGRES_HOST
-                 value: postgres
+                 value: postgres.{{ .Release.Namespace }}
                - name: POSTGRES_PORT
                  value: "5432"
                - name: POSTGRES_DB

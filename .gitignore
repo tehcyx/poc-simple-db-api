@@ -13,5 +13,7 @@
 
 bin/
 
+.envrc
+
 # ignore auto-generated templates
 internal/tmpl/*
